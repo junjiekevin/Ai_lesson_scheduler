@@ -6,9 +6,17 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
 # DB URI for SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///lesson.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+try:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:/Users/leeju/Voice_lesson_AI_Scheduler/lesson.db' # Temp absolute path to resolve bug
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    db = SQLAlchemy(app)
+    print("Configured successfully.")
+except Exception as e:
+    print(f"Error configurating: {e}")
+
+import logging
+logging.basicConfig()
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 # Route for 'Home' page / Student input form
 @app.route('/')
@@ -73,6 +81,30 @@ def finalize_schedule():
     print(f"Finalized time for {student_full_name}: {finalized_time}")
 
     return redirect(url_for('teacher_view'))
+
+# Defining Student Model
+class Student(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(50), nullable = False)
+    lesson_cat = db.Column(db.String(50), nullable = False)
+    day1 = db.Column(db.String(20), nullable = False)
+    time1 = db.Column(db.String(20), nullable = False)
+    day2 = db.Column(db.String(20), nullable = False)
+    time2 = db.Column(db.String(20), nullable = False)
+    day3 = db.Column(db.String(20), nullable = False)
+    time3 = db.Column(db.String(20), nullable = False)
+    freq = db.Column(db.String(20), nullable = False)
+    finalized_time = db.Column(db.String(50), nullable = True)
+
+    def __repr__(self):
+        return f"<{self.full_name}>"
+
+class Finalized_lesson(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable = False)
+    final_time = db.Column(db.String(50), nullable = False)
+
+
 
 if __name__ == '__main__':
     app.run(debug = True)
