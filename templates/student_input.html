@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JPY Studio Scheduler</title>
+    <script>
+        // Function to validate form
+        function validateForm() {
+
+            // Get and store user preferred days
+            let day1 = document.getElementById("day1").value;
+            let day2 = document.getElementById("day2").value;
+            let day3 = document.getElementById("day3").value;
+
+            // Get and store user preferred times
+            let time1 = document.getElementById("time1").value;
+            let time2 = document.getElementById("time2").value;
+            let time3 = document.getElementById("time3").value;
+
+            // Check for same choices
+            if ((day1 == day2 && time1 == time2) ||
+                (day1 == day3 && time1 == time3) ||
+                (day2 == day3 && time2 == time3)) {
+                alert("Please select different day/time for each preference.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+</head>
+<body>
+    <h1>Student Voice Lesson Scheduler</h1>
+    <form action="/submit" method= "POST" onsubmit="return validateForm();">
+        
+        <!-- Full Name-->
+        <label for="full_name">Full Name (First and Last):</label><br>
+        <input type="text" id="full_name" name="full_name" required><br><br>
+        
+        <!-- Lesson Category (Which school, private studio etc)-->
+        <label for="lesson_cat">Lesson Category: </label><br>
+        <select id="lesson_cat" name="lesson_cat" required>
+            <option value ="" disabled selected>Select an option</option>
+            <option value="Bard Conservatory">Bard Conservatory</option>
+            <option value="Curtis Institute of Music">Curtis Institute of Music</option>
+            <option value="MSM">MSM</option>
+            <option value="Consultation">Consultation</option>
+            <option value="Private">Private Studio</option>
+        </select><br><br>
+
+        <!-- Preferred Lesson Days/Times 1-->
+         <label for="day1">Preferred Lesson Day 1:</label><br>
+         <select id="day1" name="day1" required>
+            <option value ="" disabled selected>Select a day</option>
+            <option value ="Monday">Monday</option>
+            <option value = "Tuesday">Tuesday</option>
+            <option value = "Wednesday">Wednesday</option>
+            <option value = "Thursday">Thursday</option>
+            <option value = "Friday">Friday</option>
+            <option value = "Saturday">Saturday</option>
+            <option value = "Sunday">Sunday</option>
+         </select><br><br>
+
+        <label for="time1">Preferred Lesson Time Slot 1:</label><br>
+        <select id="time1" name="time1" required>
+            <option value ="" disabled selected>Select a time</option>
+            <option value ="10:00am">10:00am</option>
+            <option value ="11:00am">11:00am</option>
+            <option value ="12:00pm">12:00pm</option>
+            <option value ="1:00pm">1:00pm</option>
+            <option value ="3:00pm">3:00pm</option>
+            <option value ="4:00pm">4:00pm</option>
+            <option value ="5:00pm">5:00pm</option>
+            <option value ="6:00pm">6:00pm</option>
+        </select><br><br>
+
+        <!-- Preferred Lesson Days/Times 2-->
+        <label for="day2">Preferred Lesson Day 2:</label><br>
+        <select id="day2" name="day2" required>
+           <option value ="" disabled selected>Select a day</option>
+           <option value ="Monday">Monday</option>
+           <option value = "Tuesday">Tuesday</option>
+           <option value = "Wednesday">Wednesday</option>
+           <option value = "Thursday">Thursday</option>
+           <option value = "Friday">Friday</option>
+           <option value = "Saturday">Saturday</option>
+           <option value = "Sunday">Sunday</option>
+        </select><br><br>
+
+       <label for="time2">Preferred Lesson Time Slot 2:</label><br>
+       <select id="time2" name="time2" required>
+           <option value ="" disabled selected>Select a time</option>
+           <option value ="10:00am">10:00am</option>
+           <option value ="11:00am">11:00am</option>
+           <option value ="12:00pm">12:00pm</option>
+           <option value ="1:00pm">1:00pm</option>
+           <option value ="3:00pm">3:00pm</option>
+           <option value ="4:00pm">4:00pm</option>
+           <option value ="5:00pm">5:00pm</option>
+           <option value ="6:00pm">6:00pm</option>
+       </select><br><br>
+
+       <!-- Preferred Lesson Days/Times 3-->
+       <label for="day3">Preferred Lesson Day 3:</label><br>
+       <select id="day3" name="day3" required>
+          <option value ="" disabled selected>Select a day</option>
+          <option value ="Monday">Monday</option>
+          <option value = "Tuesday">Tuesday</option>
+          <option value = "Wednesday">Wednesday</option>
+          <option value = "Thursday">Thursday</option>
+          <option value = "Friday">Friday</option>
+          <option value = "Saturday">Saturday</option>
+          <option value = "Sunday">Sunday</option>
+       </select><br><br>
+
+      <label for="time3">Preferred Lesson Time Slot 3:</label><br>
+      <select id="time3" name="time3" required>
+          <option value ="" disabled selected>Select a time</option>
+          <option value ="10:00am">10:00am</option>
+          <option value ="11:00am">11:00am</option>
+          <option value ="12:00pm">12:00pm</option>
+          <option value ="1:00pm">1:00pm</option>
+          <option value ="3:00pm">3:00pm</option>
+          <option value ="4:00pm">4:00pm</option>
+          <option value ="5:00pm">5:00pm</option>
+          <option value ="6:00pm">6:00pm</option>
+      </select><br><br>
+
+      <!-- Frequency of Lessons-->
+      <label for="freq">Frequency of Lessons:</label><br>
+      <select id="freq" name="freq" required>
+        <option value ="" disabled selected>Select an option</option>
+        <option value ="Weekly">Weekly</option>
+        <option value ="Biweekly">Biweekly</option>
+        <option value ="Monthly">Monthly</option>
+        <option value ="Once">Once</option>
+      </select><br><br>
+
+      <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

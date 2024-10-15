@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher's View</title>
+</head>
+<body>
+    <h1>Teacher's View</h1>
+    <h2>Student Lesson Preferences</h2>
+    <table border = '1'>
+        <tr>
+            <th>Student Name</th>
+            <th>Lesson Category</th>
+            <th>Frequency of Lesson</th>
+            <th>Finalize Lesson</th>
+        </tr>
+
+        {% for student in students %}
+        <tr>
+            <td>{{student.full_name}}</td>
+            <td>{{student.lesson_cat}}</td>
+            <td>{{student.freq}}</td>
+            <td>
+                <!-- Dropdown menu for Teacher to select finalized time-->
+                <form action="/finalize_schedule" method="POST">
+                    <select name="finalized_time">
+                        <option value="" disabled selected>Please choose an option</option>
+                        <option value="{{ student.day1 }} {{ student.time1 }}">{{ student.day1 }} {{ student.time1 }}</option>
+                        <option value="{{ student.day2 }} {{ student.time2 }}">{{ student.day2 }} {{ student.time2 }}</option>
+                        <option value="{{ student.day3 }} {{ student.time3 }}">{{ student.day3 }} {{ student.time3 }}</option>
+                    </select>
+                    <input type="hidden" name="student_full_name" value="{{student.full_name}}">
+                    <button type="submit">Finalize</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
