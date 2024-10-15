@@ -5,7 +5,8 @@ from flask_sqlalchemy import SQLAlchemy
 # Initializing Flask app
 app = Flask(__name__)
 
-# DB URI for SQLAlchemy
+# DB URI for SQLAlchemy; Had some issues with creating DB on my laptop. 
+# "try/except" to help debug and solve issue.
 try:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:/Users/leeju/Voice_lesson_AI_Scheduler/lesson.db' # Temp absolute path to resolve bug
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -37,21 +38,39 @@ def submit():
     time3 = request.form['time3']
     freq = request.form['freq']
 
+    # New Student entry
+    new_student = Student(
+        full_name = full_name,
+        lesson_cat = lesson_cat,
+        day1 = day1,
+        time1 = time1,
+        day2 = day2,
+        time2 = time2,
+        day3 = day3,
+        time3 = time3,
+        freq = freq
+    )
+
+    # Add student to DB
+    db.session.add(new_student)
+    db.session.commit()
+
+    # Confirmation page
+    return render_template('confirmation.html',
+                           full_name = full_name,
+                           lesson_cat = lesson_cat,
+                            day1 = day1, time1 = time1,
+                            day2 = day2, time2 = time2,
+                            day3 = day3, time3 = time3,
+                            freq = freq
+                           )
+
     # For Debugging, prints form data to the console
     print(f"Name: {full_name}, Lesson Type: {lesson_cat}")
     print(f"Preferred Day/Time Choice 1: {day1}, {time1}")
     print(f"Preferred Day/Time Choice 2: {day2}, {time2}")
     print(f"Preferred Day/Time Choice 3: {day3}, {time3}")
     print(f"Lesson Frequency: {freq}")
-
-    # Confirmation page
-    return render_template('confirmation.html', 
-                           full_name = full_name, 
-                           lesson_cat = lesson_cat,
-                           day1 = day1, time1 = time1,
-                           day2 = day2, time2 = time2,
-                           day3 = day3, time3 = time3,
-                           freq = freq)
 
 # New route for teacher view
 @app.route('/teacher_view')
@@ -85,7 +104,7 @@ def finalize_schedule():
 # Defining Student Model
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String(50), nullable = False)
+    full_name = db.Column(db.String(50), nullable = False)
     lesson_cat = db.Column(db.String(50), nullable = False)
     day1 = db.Column(db.String(20), nullable = False)
     time1 = db.Column(db.String(20), nullable = False)
