@@ -72,11 +72,12 @@ def submit():
     print(f"Preferred Day/Time Choice 3: {day3}, {time3}")
     print(f"Lesson Frequency: {freq}")
 
-# New route for teacher view
+# Route for teacher view with student preferences
 @app.route('/teacher_view')
 def teacher_view():
     # Random placeholder values for now until DB is built
-    student_data = [
+    """
+     student_data = [
         {
             'full_name': 'Cindy Marie',
             'lesson_cat': 'Consultation',
@@ -86,18 +87,26 @@ def teacher_view():
             'freq': 'Once'
         }
     ]
+    """
+    # Fetch data from DB instead
+    students = Student.query.all()
+    return render_template('teacher_view.html', students = students)
 
-    return render_template('teacher_view.html', students = student_data)
-
-# New route for finalizing schedule
-@app.route('/finalize_schedule')
-def finalize_schedule():
-    # Get data from teacher's view
-    student_full_name = request.form['student_full_name']
+# Route for finalizing schedule
+@app.route('/finalize_schedule/<int:student_id>', methods=['POST'])
+def finalize_schedule(student_id):
+    # Get finalized time data from form
     finalized_time = request.form['finalized_time']
 
+    # Retrieve student from DB using ID
+    student = Student.query.get_or_404(student_id)
+
+    # Update finalized time and save changes
+    student.finalized_time = finalized_time
+    db.session.commit()
+
     # Just for debugging
-    print(f"Finalized time for {student_full_name}: {finalized_time}")
+    print(f"Finalized time for {student.full_name}: {finalized_time}")
 
     return redirect(url_for('teacher_view'))
 

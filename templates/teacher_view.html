@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher's View</title>
+    <style>
+        .finalized {
+            background-color: #7aec95;
+        }
+    </style>
 </head>
 <body>
     <h1>Teacher's View</h1>
@@ -17,22 +22,26 @@
         </tr>
 
         {% for student in students %}
-        <tr>
+        <tr class="{% if student.finalized_time %}finalized{% endif %}">
             <td>{{student.full_name}}</td>
             <td>{{student.lesson_cat}}</td>
             <td>{{student.freq}}</td>
             <td>
-                <!-- Dropdown menu for Teacher to select finalized time-->
-                <form action="/finalize_schedule" method="POST">
-                    <select name="finalized_time">
-                        <option value="" disabled selected>Please choose an option</option>
-                        <option value="{{ student.day1 }} {{ student.time1 }}">{{ student.day1 }} {{ student.time1 }}</option>
-                        <option value="{{ student.day2 }} {{ student.time2 }}">{{ student.day2 }} {{ student.time2 }}</option>
-                        <option value="{{ student.day3 }} {{ student.time3 }}">{{ student.day3 }} {{ student.time3 }}</option>
-                    </select>
-                    <input type="hidden" name="student_full_name" value="{{student.full_name}}">
-                    <button type="submit">Finalize</button>
-                </form>
+                {% if student.finalized_time %}
+                    <!-- Display finalized time-->
+                    <p>Finalized: {{ student.finalized_time }}</p>
+                {% else %}
+                    <!-- Show dropdown menu for Teacher to select finalized time if not yet finalized-->
+                    <form action="{{ url_for('finalize_schedule', student_id=student.id) }}" method="POST">
+                        <select name="finalized_time" required>
+                            <option value="" disabled selected>Please choose an option</option>
+                            <option value="{{ student.day1 }} {{ student.time1 }}">{{ student.day1 }} {{ student.time1 }}</option>
+                            <option value="{{ student.day2 }} {{ student.time2 }}">{{ student.day2 }} {{ student.time2 }}</option>
+                            <option value="{{ student.day3 }} {{ student.time3 }}">{{ student.day3 }} {{ student.time3 }}</option>
+                        </select>
+                        <button type="submit">Finalize</button>
+                    </form>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
