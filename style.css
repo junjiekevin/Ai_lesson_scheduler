@@ -1,17 +1,20 @@
+/* General body styling */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f8ff;
+    background-color: #ffe6de;
     margin: 20px;
     text-align: center;
 }
 
+/* Header (h1) styling */
 h1 {
-    color: #4CAF50;
+    color: #ff5722;
     margin-bottom: 20px;
 }
 
+/* Button styling */
 button {
-    background-color: #4CAF50;
+    background-color: #ff5722;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -19,31 +22,51 @@ button {
     cursor: pointer;
     border-radius: 5px;
     margin-bottom: 20px;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #fa450e;  /* Slightly darker on hover */
 }
 
+/* Table styling */
 table {
     margin: 0 auto;
-    width: 90%;
+    width: 100%;
     max-width: 800px;
     border-collapse: collapse;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Styling for both headers and cells */
 th, td {
     border: 1px solid #ddd;
     padding: 12px;
-    text-align: center;
+    text-align: center;  /* Horizontal centering */
+    vertical-align: middle;  /* Vertical centering */
 }
 
+/* Header (th) specific styling */
 th {
-    background-color: #4CAF50;
+    background-color: #ff5722;
     color: white;
+    font-weight: bold;
+    vertical-align: middle;  /* Ensure multi-line text is vertically centered */
+    white-space: nowrap;  /* Prevent wrapping if possible */
 }
 
+/* Alternate row color for better readability */
 tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #ffccbc;
+}
+
+/* Ensure the table is responsive on smaller screens */
+@media (max-width: 600px) {
+    table {
+        width: 100%;
+    }
+    th, td {
+        font-size: 14px;
+        padding: 10px;
+    }
 }
