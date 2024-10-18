@@ -12,6 +12,12 @@ h1 {
     margin-bottom: 20px;
 }
 
+/* Header2 (h2) styling */
+h2 {
+    color: #ff5722;
+    margin-bottom: 20px;
+}
+
 /* Button styling */
 button {
     background-color: #ff5722;
@@ -36,6 +42,7 @@ table {
     max-width: 800px;
     border-collapse: collapse;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
 }
 
 /* Styling for both headers and cells */
