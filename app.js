@@ -19,11 +19,25 @@ function populateTable(data) {
     // Iterate over the rows, skipping the header row and timestamp
     data.slice(1).forEach(row => {
         const tr = document.createElement('tr');
-        row.slice(1).forEach(cell => {  // Skip the first element (timestamp)
-            const td = document.createElement('td');
-            td.textContent = cell ? cell : 'N/A';  // Handle empty cells
-            tr.appendChild(td);
-        });
+        // Extract and combine Preferred Day and Time fields
+        const name = row[1];
+        const category = row[2];
+        const dayTime1 = `${row[3]} - ${row[4]}`;  // Preferred Day / Time 1
+        const dayTime2 = `${row[5]} - ${row[6]}`;  // Preferred Day / Time 2
+        const dayTime3 = `${row[7]} - ${row[8]}`;  // Preferred Day / Time 3
+        const frequency = row[9];
+        const email = row[10];
+
+        // Create HTML for the row
+        tr.innerHTML = `
+            <td>${name}</td>
+            <td>${category}</td>
+            <td>${dayTime1}</td>
+            <td>${dayTime2}</td>
+            <td>${dayTime3}</td>
+            <td>${frequency}</td>
+            <td>${email}</td>
+        `;
         tableBody.appendChild(tr);
     });
 }
