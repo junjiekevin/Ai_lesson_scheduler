@@ -1,8 +1,8 @@
-# PWA AI Voice Lesson Scheduler
+# PWA AI Lesson Scheduler
 
 ## Project Overview
 
-The **AI Voice Lesson Scheduler** is a Progressive Web App (PWA) designed to simplify and manage **one-on-one voice lessons**. It uses **Google Forms** for student input, **Google Sheets** for data storage, and the **Google Calendar API** to sync finalized schedules. The PWA offers **cost-effective, multi-platform access** across **iOS, Android, and desktop** without requiring a backend, ensuring easy access and seamless scheduling for teachers and students.
+The **AI Lesson Scheduler** is a Progressive Web App (PWA) designed to simplify and manage **one-on-one music lessons**. It uses **Google Forms** for student input, **Google Sheets** for data storage, and the **Google Calendar API** to sync finalized schedules. The PWA offers **cost-effective, multi-platform access** across **iOS, Android, and desktop** without requiring a backend, ensuring easy access and seamless scheduling for teachers and students.
 
 ---
 
@@ -50,7 +50,7 @@ Scheduling lessons manually can be time-consuming and prone to conflicts. This a
 ## Workflow
 
 1. **Access the PWA**:  
-   Teachers and students access the app via a **shared link** hosted on **GitHub Pages or Netlify**.
+   Teachers access the app via a **shared link** hosted on **GitHub Pages or Netlify**.
 2. **Submit Lesson Preferences via Google Forms**:  
    Students fill out:
    - Name and lesson category.
