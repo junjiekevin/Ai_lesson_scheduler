@@ -8,7 +8,7 @@ document.getElementById('fetchData').addEventListener('click', async () => {
         const data = await response.json();
         console.log('Data:', data);  // Log data for debugging
         
-        // Populate table with submissions
+        // Populate table with student submissions
         populateTable(data);
         
     } catch (error) {
@@ -18,7 +18,7 @@ document.getElementById('fetchData').addEventListener('click', async () => {
 
 // New Event Listener for Generate Schedule Button
 document.getElementById('generateSchedule').addEventListener('click', () => {
-    console.log("Generate Schedule button clicked"); // Debugging output
+    console.log("Generate Schedule button clicked"); // For Debugging
     const submissions = Array.from(document.querySelectorAll('#submissionsBody tr')).map(tr => {
         return [
             tr.children[0].textContent,  // Full Name
@@ -31,15 +31,51 @@ document.getElementById('generateSchedule').addEventListener('click', () => {
         ];
     });
     
-    console.log("Submissions for Schedule Generation:", submissions); // Debugging output
+    console.log("Submissions for Schedule Generation:", submissions); // For Debugging
 
-    // Create a weekly schedule from submissions
+    // Create weekly schedule from student submissions
     const weeklySchedule = createWeeklySchedule(submissions);
-    console.log("Generated Weekly Schedule:", weeklySchedule); // Debuggin output
+    console.log("Generated Weekly Schedule:", weeklySchedule); // For Debugging
     displayScheduleToTeacher(weeklySchedule);
 });
 
-// Function to create weekly schedule based on submissions
+// Erro notification function
+function showNotification(message) {
+    // Create notification div
+    const notificationDiv = document.createElement('div');
+    notificationDiv.style.position = 'fixed';
+    notificationDiv.style.bottom = '20px';
+    notificationDiv.style.right = '20px';
+    notificationDiv.style.backgroundColor = '#ff3333'; // Notification background color
+    notificationDiv.style.color = '#fff'; // Text color
+    notificationDiv.style.padding = '30px 40px'; // Increased padding
+    notificationDiv.style.borderRadius = '5px';
+    notificationDiv.style.zIndex = '1000'; // Make sure it's on top
+    notificationDiv.style.fontSize = '30px'; // Text size
+    notificationDiv.style.display = 'flex'; // Use flex to align items
+
+    // Create close button
+    const closeButton = document.createElement('span');
+    closeButton.textContent = 'X'; // Close button text
+    closeButton.style.marginLeft = 'auto'; // Push the close button to the right
+    closeButton.style.cursor = 'pointer'; // Change cursor to pointer
+    closeButton.style.fontSize = '20px'; // Size of close button
+    closeButton.style.color = '#fff'; // Close button color
+
+    // Add click event to close the notification
+    closeButton.addEventListener('click', () => {
+        notificationDiv.remove(); // Remove notification on click
+    });
+
+    // Append close button to notification div
+    notificationDiv.appendChild(document.createTextNode(message)); // Add the message
+    notificationDiv.appendChild(closeButton); // Add close button to the notification
+
+    // Append notification div to body
+    document.body.appendChild(notificationDiv);
+}
+
+// Create weekly schedule based on student submissions
 function createWeeklySchedule(submissions) {
     const schedule = {};
     const assignedTimes = {}; // Track assigned times
@@ -55,7 +91,7 @@ function createWeeklySchedule(submissions) {
 
         let assigned = false; // Flag to check if assigned a time
 
-        // Using for...of to allow break
+        // Using loop to allow break
         for (const preference of preferences) {
             if (preference) {
                 const [day, time] = preference.split(' - '); // Split into day and time
@@ -80,14 +116,14 @@ function createWeeklySchedule(submissions) {
 
         // If no preferred time slot was available, notify
         if (!assigned) {
-            console.warn(`No available time slots for ${name}`); // Replace this with a notification UI later!!!!
+            showNotification(`Note: No available time slots for ${name} (${lessonCategory})`); // Notificaiton UI
         }
     });
 
     return schedule;
 }
 
-// Function to display AI suggested schedule in a structured table
+// Function to display AI suggested schedule in structured table
 function displayScheduleToTeacher(schedule) {
     const scheduleTable = document.getElementById('scheduleTable').getElementsByTagName('tbody')[0];
     scheduleTable.innerHTML = '';  // Clear previous schedule
@@ -109,7 +145,7 @@ function displayScheduleToTeacher(schedule) {
         days.forEach(day => {
             const cell = document.createElement('td');
             const entries = schedule[day] || []; // Get entries for the day or empty array
-            const scheduled = entries.find(entry => entry.time === time); // Check if a student is scheduled at this time
+            const scheduled = entries.find(entry => entry.time === time); // Check if student is scheduled at this time
             
             if (scheduled) {
                 cell.textContent = `${scheduled.name} (${scheduled.lessonCategory})`; // Format: student_name (lesson_cat)
