@@ -1,5 +1,5 @@
-// Fetching data from Google Sheets
-document.getElementById('fetchData').addEventListener('click', async () => {
+// Function to fetch data from Google Sheets
+async function fetchData() {
     try {
         const response = await fetch('https://script.google.com/macros/s/AKfycbzJDgQjuWk9_r-8l91Uly36nA65y5Wz0lEWXBTDcMDYA-ty1na7HnaXxwrJeBY9AniH/exec');
         if (!response.ok) {
@@ -14,7 +14,10 @@ document.getElementById('fetchData').addEventListener('click', async () => {
     } catch (error) {
         console.error('Error retrieving data:', error);
     }
-});
+}
+
+// Call fetchData when the page loads
+document.addEventListener('DOMContentLoaded', fetchData);
 
 // New Event Listener for Generate Schedule Button
 document.getElementById('generateSchedule').addEventListener('click', () => {
@@ -39,7 +42,7 @@ document.getElementById('generateSchedule').addEventListener('click', () => {
     displayScheduleToTeacher(weeklySchedule);
 });
 
-// Erro notification function
+// Error notification function
 function showNotification(message) {
     // Create notification div
     const notificationDiv = document.createElement('div');
@@ -48,18 +51,19 @@ function showNotification(message) {
     notificationDiv.style.right = '20px';
     notificationDiv.style.backgroundColor = '#ff3333'; // Notification background color
     notificationDiv.style.color = '#fff'; // Text color
-    notificationDiv.style.padding = '30px 40px'; // Increased padding
+    notificationDiv.style.padding = '20px 30px';
     notificationDiv.style.borderRadius = '5px';
     notificationDiv.style.zIndex = '1000'; // Make sure it's on top
-    notificationDiv.style.fontSize = '30px'; // Text size
-    notificationDiv.style.display = 'flex'; // Use flex to align items
+    notificationDiv.style.fontSize = '20px'; // Text size
+    notificationDiv.style.display = 'flex'; // Align items
+    notificationDiv.style.alignItems = 'center'; // Center items vertically
+    notificationDiv.style.justifyContent = 'space-between'; // Space between message and close button
 
     // Create close button
     const closeButton = document.createElement('span');
-    closeButton.textContent = 'X'; // Close button text
-    closeButton.style.marginLeft = 'auto'; // Push the close button to the right
+    closeButton.textContent = '✖'; // Close button text
     closeButton.style.cursor = 'pointer'; // Change cursor to pointer
-    closeButton.style.fontSize = '20px'; // Size of close button
+    closeButton.style.fontSize = '19px'; // Size of close button
     closeButton.style.color = '#fff'; // Close button color
 
     // Add click event to close the notification
@@ -190,3 +194,32 @@ function populateTable(data) {
         tableBody.appendChild(tr);
     });
 }
+
+// Event listener for Finalize Schedule button
+document.getElementById('finalizeSchedule').addEventListener('click', () => {
+    console.log("Clickity clicked!"); // Log onto console for debugging
+
+    // Logic for sending finalized schedule to Google Calendar will be here
+    // Logging schedule to console for now
+    const scheduleTable = document.getElementById('scheduleTable');
+    const finalizeSchedule = [];
+
+    // Gathering finalized schedule from table
+    const rows = scheduleTable.getElementsByTagName('tr');
+    for (let i = 1; i < rows.length; i++) { // Skip header row
+        const rowData = {
+            time: rows[i].cells[0].textContent, // Time slots
+            assignments: []
+        };
+
+        for (let j = 1; j < rows[i].cells.length; j++) { // Iterating through 'Days'
+            if (rows[i].cells[j].textContent) {
+                rowData.assignments.push(rows[i].cells[j].textContent); // Add assigned student
+            }
+        }
+        finalizeSchedule.push(rowData);
+    }
+    
+    console.log("Finalized Schedule: ", finalizeSchedule);
+
+})
