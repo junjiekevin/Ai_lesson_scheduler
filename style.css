@@ -77,3 +77,18 @@ tr:nth-child(even) {
         padding: 10px;
     }
 }
+
+#scheduleTable td input {
+    width: 100%; /* Make the input field take up the whole cell */
+    padding: 5px; /* Add padding for better appearance */
+    border: none; /* Remove default border */
+    font-size: 16px; /* Set font size for input */
+    text-align: center; /* Center text inside input */
+    box-sizing: border-box; /* Ensure padding doesn't overflow the cell */
+}
+
+/* Add hover effect for editable cells */
+#scheduleTable td:hover {
+    background-color: #f0f0f0; /* Light background when hovering over cells */
+    cursor: pointer; /* Change cursor to indicate interactivity */
+}
