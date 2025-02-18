@@ -1,3 +1,4 @@
 venv/ 
 __pycache__/ 
 web_app_ver/lesson.db
+config.js
