@@ -2,58 +2,106 @@ let currentSchedule = {};
 
 const API_KEY = CONFIG.GOOGLE_API_KEY;
 const CLIENT_ID = CONFIG.GOOGLE_CLIENT_ID;
+let tokenClient; 
 const SCOPES = [
     "https://www.googleapis.com/auth/forms.body",
     "https://www.googleapis.com/auth/spreadsheets.readonly",
     "https://www.googleapis.com/auth/gmail.send",
-    "https://www.googleapis.com/auth/drive.file"
+    "https://www.googleapis.com/auth/drive"
+
 ].join(" ");
 const DISCOVERY_DOCS = [
     "https://forms.googleapis.com/$discovery/rest",
     "https://sheets.googleapis.com/$discovery/rest",
-    "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest"
+    "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest",
+    "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"
 ];
 
 function loadGapi() {
-    gapi.load("client:auth2", initGapi);
+    gapi.load("client", initGapi);
 }
 
 async function initGapi() {
     try {
         await gapi.client.init({
-            apiKey: API_KEY,
-            clientId: CLIENT_ID,
-            scope: SCOPES,
             discoveryDocs: DISCOVERY_DOCS
         });
 
-        console.log("Google API Initialized");
-        updateSignInStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-
-        document.getElementById("authorizeButton").addEventListener("click", () => {
-            gapi.auth2.getAuthInstance().signIn().then(user => {
-                console.log("User signed in:", user.getBasicProfile().getName());
-            }).catch(error => console.error("Sign-in Error:", error));
-        });
-
-        document.getElementById("signOutButton").addEventListener("click", () => {
-            gapi.auth2.getAuthInstance().signOut();
-        });
+        console.log("Google API Client Initialized");
 
     } catch (error) {
         console.error("Google API Initialization Error:", error);
     }
 }
 
-function updateSignInStatus(isSignedIn) {
-    document.getElementById("authorizeButton").style.display = isSignedIn ? "none" : "block";
-    document.getElementById("signOutButton").style.display = isSignedIn ? "block" : "none";
+window.onload = () => {
+    google.accounts.id.initialize({
+        client_id: CLIENT_ID,
+        callback: handleCredentialResponse
+    });
 
-    if (isSignedIn) {
-        console.log("User signed in successfully.");
-        const user = gapi.auth2.getAuthInstance().currentUser.get();
-        console.log("User Info:", user.getBasicProfile());
+    google.accounts.id.renderButton(
+        document.getElementById("authorizeButton"),
+        { theme: "outline", size: "large" }
+    );
+
+    google.accounts.id.prompt();
+};
+
+function handleCredentialResponse(response) {
+    const jwt = response.credential;
+    console.log("JWT ID Token:", jwt);
+
+    const userInfo = parseJwt(jwt);
+    console.log("User Info:", userInfo);
+
+    document.getElementById("generateSchedule").disabled = false;
+    document.getElementById("finalizeSchedule").disabled = false;
+    document.getElementById("authorizeButton").style.display = "none";
+    document.getElementById("signOutButton").style.display = "block";
+
+    // Request OAuth token with Drive/Forms/Sheets permissions
+    tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: SCOPES,
+        callback: async (tokenResponse) => {
+            if (tokenResponse.error) {
+                console.error("OAuth Token Error:", tokenResponse);
+                showNotification("Authorization failed.");
+                return;
+            }
+    
+            console.log("OAuth Token granted:", tokenResponse);
+    
+            gapi.client.setToken({ access_token: tokenResponse.access_token });
+    
+            await initGapi();
+            fetchData();
+        }
+    });    
+
+    tokenClient.requestAccessToken();
+}
+
+document.getElementById("copyFormBtn").addEventListener("click", async () => {
+    const templateFormId = "1LIdS_eB8MIlO-QljvGoDrDsQBqNsGc2Bb9H4G7xktGg";
+    const newFormId = await copyFormToUserDrive(templateFormId);
+    
+    if (newFormId) {
+        localStorage.setItem("userFormId", newFormId);
+        showNotification("Form copied successfully!");
+        console.log("Saved new form ID to localStorage:", newFormId);
     }
+});
+
+function parseJwt(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+        return `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`;
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -62,27 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
     script.onload = loadGapi;
     document.body.appendChild(script);
 });
-
-// Function to fetch data from Google Sheets
-async function fetchData() {
-    try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbzJDgQjuWk9_r-8l91Uly36nA65y5Wz0lEWXBTDcMDYA-ty1na7HnaXxwrJeBY9AniH/exec');
-        if (!response.ok) {
-            throw new Error('Network response was not OK');
-        }
-        const data = await response.json();
-        console.log('Data:', data);  // Log data for debugging
-        
-        // Populate table with student submissions
-        populateTable(data);
-        
-    } catch (error) {
-        console.error('Error retrieving data:', error);
-    }
-}
-
-// Call fetchData when the page loads
-document.addEventListener('DOMContentLoaded', fetchData);
 
 // New Event Listener for Generate Schedule Button
 document.getElementById('generateSchedule').addEventListener('click', () => {
@@ -288,7 +315,6 @@ function updateScheduleUI(day, time, entry) {
     }
 }
 
-
 function enableDragAndDrop() {
     const scheduleCells = document.querySelectorAll('.schedule-cell'); 
 
@@ -346,6 +372,34 @@ function updateScheduleData(draggedElement, targetCell) {
 
 // Enable drag and drop functionality on page load
 document.addEventListener('DOMContentLoaded', enableDragAndDrop);
+
+async function fetchData() {
+    const sheetId = localStorage.getItem("userSheetId");
+    if (!sheetId) {
+        showNotification("No sheet linked. Please copy and link your form first.");
+        return;
+    }
+
+    try {
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: sheetId,
+            range: "Form Responses 1"  // This is the default tab name Google Forms creates
+        });
+
+        const rows = response.result.values;
+        if (!rows || rows.length <= 1) {
+            showNotification("No responses found yet.");
+            return;
+        }
+
+        console.log("Fetched Data from Sheet:", rows);
+        populateTable(rows);
+
+    } catch (error) {
+        console.error("Error fetching data from user's Sheet:", error);
+        showNotification("Failed to load form responses.");
+    }
+}
 
 // Populate table with submission data
 function populateTable(data) {
@@ -405,3 +459,43 @@ document.getElementById('finalizeSchedule').addEventListener('click', () => {
     console.log("Finalized Schedule: ", finalizeSchedule);
 
 })
+
+async function copyFormToUserDrive(templateFormId) {
+    try {
+        const response = await gapi.client.drive.files.copy({
+            fileId: templateFormId,
+            resource: {
+                name: "My Lesson Confirmation Form",
+                mimeType: "application/vnd.google-apps.form"
+            }
+        });
+
+        const copiedForm = response.result;
+        console.log("Form copied to user’s Drive:", copiedForm);
+        return copiedForm.id;
+
+    } catch (error) {
+        console.error("Error copying form to user Drive:", error);
+        showNotification("Failed to copy Form. Please try again.");
+    }
+}
+
+async function linkFormToSheetViaAppsScript(formId) {
+    try {
+        const scriptUrl = "https://script.google.com/macros/s/AKfycbxWvZokx_m3HM3wvW51ZPL56zZdz3_FDWICYv3ZqnFY710egz6pJWIWPA8ovnAEtEKV/exec"; 
+        const response = await fetch(`${scriptUrl}?formId=${formId}`);
+        const sheetId = await response.text();
+
+        if (sheetId.startsWith("Error")) {
+            throw new Error(sheetId);
+        }
+
+        showNotification("Form linked to new Sheet!");
+        console.log("Linked Sheet ID:", sheetId);
+        return sheetId;
+
+    } catch (err) {
+        console.error("Error linking form to sheet:", err);
+        showNotification("Failed to link form to sheet.");
+    }
+}

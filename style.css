@@ -28,7 +28,7 @@ button {
     cursor: pointer;
     border-radius: 5px;
     margin-bottom: 20px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
 }
 
 button:hover {
@@ -91,4 +91,9 @@ tr:nth-child(even) {
 #scheduleTable td:hover {
     background-color: #f0f0f0; /* Light background when hovering over cells */
     cursor: pointer; /* Change cursor to indicate interactivity */
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }

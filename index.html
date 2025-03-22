@@ -6,12 +6,15 @@
     <title>Lesson Scheduler - View Submissions</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <h1>Lesson Scheduler</h1>
     
+    <button id="copyFormBtn">Copy My Lesson Form</button>
+
     <!-- Button to generate schedule -->
-    <button id="generateSchedule">Generate Schedule</button>
+    <button id="generateSchedule" disabled>Generate Schedule</button>
 
     <table id="submissionsTable">
         <thead>
@@ -62,7 +65,7 @@
         
         <!-- Finalize Schedule Button -->
         <div style="text-align: center; margin-top: 20px;">
-            <button id="finalizeSchedule">Finalize Schedule</button>
+            <button id="finalizeSchedule" disabled>Finalize Schedule</button>
         </div>
     </div>
 
